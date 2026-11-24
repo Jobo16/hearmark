@@ -8,6 +8,7 @@ import hashlib
 import html
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -16,17 +17,21 @@ import tarfile
 import tempfile
 import time
 import urllib.request
+import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 CONFIG = Path.home() / ".config/hearmark/config.json"
 CACHE = Path.home() / ".cache/hearmark/models"
 PARAKEET_DIR = Path.home() / ".cache/hearmark/parakeet"
-PARAKEET_BIN = PARAKEET_DIR / "parakeet-cli"
+PARAKEET_BIN = PARAKEET_DIR / ("parakeet-cli.exe" if sys.platform == "win32" else "parakeet-cli")
 PARAKEET_MODEL = CACHE / "tdt_ctc-110m-q8_0.gguf"
-PARAKEET_BIN_URL = "https://github.com/mudler/parakeet.cpp/releases/download/v0.6.1/parakeet-v0.6.1-bin-macos-metal-arm64.tar.gz"
-PARAKEET_BIN_SHA256 = "bc97b5e6253e928d1127f48f08242324317495ef8708e31db1e09b9537d1bb74"
+PARAKEET_RUNNERS = {
+    ("darwin", "arm64"): ("macos-metal-arm64.tar.gz", "bc97b5e6253e928d1127f48f08242324317495ef8708e31db1e09b9537d1bb74"),
+    ("darwin", "x86_64"): ("macos-cpu-x64.tar.gz", "82392069ea091c896dcf86fb5d86f20d107c71f6bad4b9e79a114523d98fb643"),
+    ("win32", "amd64"): ("win-cpu-x64.zip", "d74b4e857f75f91ae215c5e91ec42bf15ec84ed3a369423c134dbd6422243ed8"),
+}
 PARAKEET_MODEL_URL = "https://huggingface.co/mudler/parakeet-cpp-gguf/resolve/main/tdt_ctc-110m-q8_0.gguf"
 PARAKEET_MODEL_SHA256 = "614feee3a990cf0e672b0314f4da0c80ae8da9094507f5ccb7c42e43b5fc5a12"
 EXISTING_SENSEVOICE = Path.home() / ".cache/local-asr/models/sensevoice-small-int8"
@@ -34,7 +39,7 @@ SENSEVOICE = EXISTING_SENSEVOICE if (EXISTING_SENSEVOICE / "model.int8.onnx").is
 SENSEVOICE_ARCHIVE = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2"
 SILERO_URL = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx"
 MODELS = {
-    "parakeet-q8": {"description": "Fast English Parakeet 110M Q8, local Metal", "languages": "en"},
+    "parakeet-q8": {"description": "Fast English Parakeet 110M Q8, local runner", "languages": "en"},
     "sensevoice": {"description": "Fast Chinese and English; local ONNX model", "languages": "zh,en"},
     "whisper-small": {"description": "Light multilingual Whisper", "languages": "multilingual"},
     "whisper-medium": {"description": "Balanced multilingual Whisper", "languages": "multilingual"},
@@ -72,7 +77,8 @@ def check_updates() -> dict:
         with urllib.request.urlopen(request, timeout=2) as response:
             manifest = json.load(response)
         latest = str(manifest.get("version", ""))
-        update = {"status": "available" if latest and latest != VERSION else "current", "installed": VERSION, "latest": latest}
+        newer = tuple(map(int, re.findall(r"\d+", latest))) > tuple(map(int, re.findall(r"\d+", VERSION)))
+        update = {"status": "available" if newer else "current", "installed": VERSION, "latest": latest}
         if update["status"] == "available":
             log(f"Hearmark update available: {VERSION} -> {latest}")
         return update
@@ -104,7 +110,38 @@ def browser_candidates(requested: str) -> list[str]:
             ("brave", Path.home() / "Library/Application Support/BraveSoftware/Brave-Browser"),
         ]
         return [name for name, path in options if path.exists()][:2]
+    if sys.platform == "win32":
+        local = Path(os.environ.get("LOCALAPPDATA", ""))
+        roaming = Path(os.environ.get("APPDATA", ""))
+        options = [
+            ("chrome", local / "Google/Chrome/User Data"),
+            ("edge", local / "Microsoft/Edge/User Data"),
+            ("firefox", roaming / "Mozilla/Firefox"),
+            ("brave", local / "BraveSoftware/Brave-Browser/User Data"),
+        ]
+        return [name for name, path in options if path.is_dir()][:2]
     return ["chrome", "firefox"]
+
+
+def update_ytdlp() -> None:
+    """Check PyPI's stable release before each link task; keep an offline install usable."""
+    try:
+        from filelock import FileLock
+        from yt_dlp.version import __version__ as installed
+        lock = Path.home() / ".cache/hearmark/yt-dlp-update.lock"
+        lock.parent.mkdir(parents=True, exist_ok=True)
+        with FileLock(str(lock), timeout=30):
+            request = urllib.request.Request("https://pypi.org/pypi/yt-dlp/json", headers={"User-Agent": f"Hearmark/{VERSION}"})
+            with urllib.request.urlopen(request, timeout=4) as response:
+                latest = json.load(response)["info"]["version"]
+            if tuple(map(int, re.findall(r"\d+", latest))) <= tuple(map(int, re.findall(r"\d+", installed))):
+                return
+            log(f"Updating yt-dlp {installed} -> {latest} before accessing the link...")
+            uv = shutil.which("uv")
+            command = [uv, "pip", "install", "--python", sys.executable, "--upgrade", "yt-dlp[default]"] if uv else [sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp[default]"]
+            subprocess.run(command, check=True, stdout=subprocess.DEVNULL)
+    except (OSError, ValueError, KeyError, ImportError, subprocess.CalledProcessError, TimeoutError) as exc:
+        log(f"Could not check or update yt-dlp ({type(exc).__name__}); trying the installed version.")
 
 
 def run_ytdlp(arguments: list[str], browser: str | None = None) -> tuple[int, list[str]]:
@@ -179,22 +216,46 @@ def parse_vtt(path: Path) -> list[dict]:
     return segments
 
 
-def try_captions(url: str, directory: Path, language: str, browser: str) -> tuple[list[dict], str | None, list[str]]:
-    patterns = {"en": "en", "zh": "zh-Hans,zh-Hant,zh", "auto": "en,zh-Hans,zh-Hant"}
-    arguments = [
-        "--skip-download", "--write-subs", "--write-auto-subs", "--sub-format", "vtt",
-        "--sub-langs", patterns.get(language, language + ".*"),
-        "-o", str(directory / "caption.%(ext)s"), url,
-    ]
-    _code, _lines, used_browser, tried = run_with_browser_fallback(arguments, browser)
-    files = sorted(directory.glob("caption.*.vtt"))
-    if not files:
-        return [], used_browser, tried
-    for file in files:
-        segments = parse_vtt(file)
-        if segments:
-            return segments, used_browser, tried
-    return [], used_browser, tried
+def caption_track(tracks: dict, spoken: str, requested: str, allow_single: bool = False) -> str | None:
+    """Select a native-language track, avoiding translated automatic tracks."""
+    if not isinstance(tracks, dict):
+        return None
+    preferred = spoken or (requested if requested != "auto" else "")
+    if not preferred:
+        originals = [code for code in tracks if code.endswith("-orig")]
+        if originals:
+            return originals[0]
+        return next(iter(tracks)) if allow_single and len(tracks) == 1 else None
+    base = preferred.lower().split("-")[0]
+    matches = [code for code in tracks if code.lower() == preferred.lower() or code.lower().split("-")[0] == base]
+    matches = [code for code in matches if code.lower() == base or code.lower().endswith("-orig") or (base == "zh" and code.lower() in ("zh-hans", "zh-hant"))]
+    return matches[0] if matches else None
+
+
+def try_captions(url: str, directory: Path, language: str, browser: str) -> tuple[list[dict], str | None, list[str], str | None, str | None]:
+    code, lines, used_browser, tried = run_with_browser_fallback(["--dump-single-json", "--skip-download", url], browser)
+    if code != 0:
+        return [], used_browser, tried, None, None
+    try:
+        info = next(json.loads(line) for line in reversed(lines) if line.startswith("{"))
+    except (StopIteration, ValueError):
+        return [], used_browser, tried, None, None
+    spoken = str(info.get("language") or "")
+    for key, option, provenance in (("subtitles", "--write-subs", "manual_captions"), ("automatic_captions", "--write-auto-subs", "automatic_captions")):
+        track = caption_track(info.get(key) or {}, spoken, language, allow_single=key == "subtitles")
+        if not track:
+            continue
+        arguments = ["--skip-download", option, "--sub-format", "vtt", "--sub-langs", "^" + re.escape(track) + "$", "-o", str(directory / "caption.%(ext)s"), url]
+        result, _lines, caption_browser, caption_tried = run_with_browser_fallback(arguments, browser)
+        tried.extend(item for item in caption_tried if item not in tried)
+        if caption_browser:
+            used_browser = caption_browser
+        if result == 0:
+            for file in (*directory.glob("caption.*.vtt"), *directory.glob("caption.*.srt")):
+                segments = parse_vtt(file)
+                if segments:
+                    return segments, used_browser, tried, provenance, track
+    return [], used_browser, tried, None, None
 
 
 def has_audio(path: Path) -> bool:
@@ -245,22 +306,35 @@ def verify_sha256(path: Path, expected: str) -> None:
 
 def ensure_parakeet() -> None:
     if not PARAKEET_BIN.is_file():
-        log("Downloading Parakeet's macOS runner for first use...")
+        runner = PARAKEET_RUNNERS.get((sys.platform, platform.machine().lower()))
+        if runner is None:
+            raise MediaError("unsupported_platform", "Parakeet runner supports Apple Silicon and Intel Macs or Windows x64")
+        archive_name, expected_sha = runner
+        log("Downloading Parakeet's local runner for first use...")
         with tempfile.TemporaryDirectory(prefix="hearmark-parakeet-") as temp:
-            archive = Path(temp) / "parakeet.tar.gz"
-            download_file(PARAKEET_BIN_URL, archive)
-            verify_sha256(archive, PARAKEET_BIN_SHA256)
-            with tarfile.open(archive, "r:gz") as package:
-                member = next((item for item in package if item.isfile() and item.name.endswith("/parakeet-cli")), None)
-                if member is None:
-                    raise MediaError("model_download_failed", "Parakeet runner archive is incomplete")
-                source = package.extractfile(member)
-                assert source is not None
-                PARAKEET_DIR.mkdir(parents=True, exist_ok=True)
-                with source, (PARAKEET_DIR / "parakeet-cli.part").open("wb") as output:
-                    shutil.copyfileobj(source, output)
-                (PARAKEET_DIR / "parakeet-cli.part").chmod(0o755)
-                os.replace(PARAKEET_DIR / "parakeet-cli.part", PARAKEET_BIN)
+            archive = Path(temp) / archive_name
+            download_file("https://github.com/mudler/parakeet.cpp/releases/download/v0.6.1/parakeet-v0.6.1-bin-" + archive_name, archive)
+            verify_sha256(archive, expected_sha)
+            suffix = "/" + PARAKEET_BIN.name
+            if archive_name.endswith(".zip"):
+                with zipfile.ZipFile(archive) as package:
+                    member = next((name for name in package.namelist() if name.endswith(suffix)), None)
+                    if member is None:
+                        raise MediaError("model_download_failed", "Parakeet runner archive is incomplete")
+                    data = package.read(member)
+            else:
+                with tarfile.open(archive, "r:gz") as package:
+                    member = next((item for item in package if item.isfile() and item.name.endswith(suffix)), None)
+                    if member is None:
+                        raise MediaError("model_download_failed", "Parakeet runner archive is incomplete")
+                    source = package.extractfile(member)
+                    assert source is not None
+                    data = source.read()
+            PARAKEET_DIR.mkdir(parents=True, exist_ok=True)
+            partial = PARAKEET_BIN.with_suffix(PARAKEET_BIN.suffix + ".part")
+            partial.write_bytes(data)
+            partial.chmod(0o755)
+            os.replace(partial, PARAKEET_BIN)
     if not PARAKEET_MODEL.is_file():
         log("Downloading Parakeet 110M Q8 weights from Hugging Face for first use...")
         partial = PARAKEET_MODEL.with_suffix(".gguf.part")
@@ -443,14 +517,15 @@ def transcribe(args: argparse.Namespace, update: dict) -> int:
     used_browser: str | None = None
     try:
         if is_url(source):
+            update_ytdlp()
             if args.captions == "prefer":
-                segments, used_browser, tried = try_captions(source, directory, args.language, args.browser)
+                segments, used_browser, tried, caption_origin, caption_language = try_captions(source, directory, args.language, args.browser)
                 if segments:
                     files = write_transcript(directory, segments, {
-                        "source": source, "provenance": "platform_captions", "model": None,
-                        "language": args.language, "browser": used_browser,
+                        "source": source, "provenance": caption_origin, "model": None,
+                        "language": caption_language, "browser": used_browser,
                     })
-                    return emit({"status": "ok", **files, "directory": str(directory), "provenance": "platform_captions", "update": update})
+                    return emit({"status": "ok", **files, "directory": str(directory), "provenance": caption_origin, "update": update})
             media, used_browser, tried = download_media(source, directory, args.browser)
         else:
             media = Path(source).expanduser().resolve()

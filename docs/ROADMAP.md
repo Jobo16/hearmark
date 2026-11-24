@@ -4,13 +4,13 @@ Hearmark is an early local-first beta. Priorities are driven by reproducible iss
 
 ## Next
 
-- Test English and Chinese quality and speed on more Apple Silicon devices and accents.
-- Improve caption-language selection and platform failure messages.
+- Test English and Chinese quality and speed across Apple Silicon, Intel Mac, and Windows x64 devices and accents.
+- Improve platform failure messages for changing video sites.
 - Add a safe in-Skill upgrade command that verifies the published package digest before replacement.
 
 ## Later, if there is demand
 
-- Additional operating systems and local model runtimes.
+- Additional CPU architectures and local model runtimes.
 - More media platforms where access is reliable and maintainable.
 - Optional cloud ASR with explicit user choice and a separate privacy model.
 

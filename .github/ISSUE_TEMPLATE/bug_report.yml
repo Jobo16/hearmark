@@ -5,14 +5,14 @@ body:
     id: version
     attributes:
       label: Hearmark version
-      placeholder: 0.1.1
+      placeholder: 0.2.0
     validations:
       required: true
   - type: input
     id: environment
     attributes:
-      label: macOS and chip
-      placeholder: macOS 15, M2
+      label: Operating system and CPU
+      placeholder: macOS 15, M2 or Windows 11, x64
     validations:
       required: true
   - type: textarea

@@ -25,7 +25,7 @@
     "@type": "SoftwareApplication",
     "name": "Hearmark",
     "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "macOS Apple Silicon",
+    "operatingSystem": "macOS, Windows 10 or later",
     "url": "https://hearmark.jobo.ink/",
     "codeRepository": "https://github.com/Jobo16/hearmark",
     "description": "An open-source Agent Skill that downloads user-provided media and transcribes it locally with Parakeet, SenseVoice, or Whisper.",
@@ -102,7 +102,7 @@
       <div class="section-heading"><span class="kicker">THE WORKFLOW</span><h2>The interface is<br><em>your agent.</em></h2><p>No extra workspace to learn. Ask for a transcript in the conversation where you already do your work.</p></div>
       <div class="steps">
         <article class="step"><span class="step-num">01 / ASK</span><div class="step-icon">↗</div><h3>Give it a source</h3><p>Paste a YouTube, Douyin, or TikTok link, or point to a local audio or video file.</p></article>
-        <article class="step"><span class="step-num">02 / FETCH</span><div class="step-icon">≈</div><h3>Get the speech</h3><p>Use available captions first. Otherwise fetch the audio; if the site asks for verification, try a local browser session.</p></article>
+        <article class="step"><span class="step-num">02 / FETCH</span><div class="step-icon">≈</div><h3>Get the speech</h3><p>Use original-language human captions first, then automatic captions. Otherwise fetch the audio; if the site asks for verification, try a local browser session.</p></article>
         <article class="step"><span class="step-num">03 / READ</span><div class="step-icon">≡</div><h3>Work with the words</h3><p>Receive TXT, SRT, and JSON files. Ask your agent to summarize, translate, search, or quote the actual transcript.</p></article>
       </div>
     </section>
@@ -125,7 +125,7 @@
     <section id="install" class="install-section shell">
       <div class="install-title"><span class="kicker">GET STARTED</span><h2>One prompt.<br><em>Your agent handles setup.</em></h2><p>Copy the prompt into Codex or Claude Code. The agent downloads the small package, checks it, installs the Skill, and runs a local diagnostic.</p></div>
       <div class="install-card">
-        <div class="install-card-top"><div class="agent-tabs" role="tablist" aria-label="Choose your agent"><button type="button" class="agent-tab active" data-agent="Codex" role="tab" aria-selected="true">Codex</button><button type="button" class="agent-tab" data-agent="Claude Code" role="tab" aria-selected="false">Claude Code</button></div><span class="platform">macOS Apple Silicon beta</span></div>
+        <div class="install-card-top"><div class="agent-tabs" role="tablist" aria-label="Choose your agent"><button type="button" class="agent-tab active" data-agent="Codex" role="tab" aria-selected="true">Codex</button><button type="button" class="agent-tab" data-agent="Claude Code" role="tab" aria-selected="false">Claude Code</button></div><span class="platform">macOS Apple Silicon / Intel · Windows x64</span></div>
         <div class="prompt-label">SEND THIS TO YOUR AGENT</div>
         <pre id="install-prompt" class="prompt" aria-live="polite">Loading setup prompt…</pre>
         <div class="install-actions"><button id="copy-prompt" class="button button-primary" type="button">Copy prompt <span aria-hidden="true">↗</span></button><a id="download-package" class="download-link" href="/hearmark-package.zip" download>Download package instead <span aria-hidden="true">↓</span></a></div>
@@ -135,7 +135,7 @@
 
     <section class="detail-section shell">
       <div class="detail-card"><span class="detail-symbol">⌁</span><h3>Browser session when needed</h3><p>Public access is tried first. If a site challenges the request, Hearmark tells you which local browser session it uses. Cookies are never sent to Hearmark.</p></div>
-      <div class="detail-card"><span class="detail-symbol">↻</span><h3>Checks for updates</h3><p>Every run checks the published package version. A failed update check does not stop an offline or otherwise working task.</p></div>
+      <div class="detail-card"><span class="detail-symbol">↻</span><h3>Checks for updates</h3><p>Every run checks the Skill version. Link tasks also check the latest stable yt-dlp and upgrade when needed. Offline checks do not stop a working task.</p></div>
       <div class="detail-card"><span class="detail-symbol">◇</span><h3>Honest failures</h3><p>Private, unavailable, or restricted media can still fail. The agent gets a classified error and a next step, instead of a made-up transcript.</p></div>
     </section>
 
@@ -150,6 +150,6 @@
     </section>
   </main>
 
-  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.1.1</span></footer>
+  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.2.0</span></footer>
 </body>
 </html>

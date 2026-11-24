@@ -7,7 +7,8 @@ import os
 import sys
 from pathlib import Path
 
-runtime = Path.home() / ".local/share/hearmark/venv/bin/python"
+venv = Path.home() / ".local/share/hearmark/venv"
+runtime = venv / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
 script = Path(__file__).resolve().with_name("hearmark.py")
 python = runtime if runtime.is_file() else Path(sys.executable)
 os.execv(str(python), [str(python), str(script), *sys.argv[1:]])

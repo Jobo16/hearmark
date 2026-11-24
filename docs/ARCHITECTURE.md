@@ -5,7 +5,7 @@
 1. The static website at `hearmark.jobo.ink` serves an installation prompt, a small ZIP, and `manifest.json`. It does not receive audio or browser cookies.
 2. The installer copies `.agents/skills/hearmark` to `~/.agents/skills/hearmark`, links Claude Code to the same directory, and creates an isolated Python environment.
 3. The Skill calls `scripts/launch.py`, which runs the local CLI from that environment. The CLI emits progress to stderr and one JSON outcome on stdout.
-4. The CLI tries captions, then downloads audio with `yt-dlp` when needed. It checks the final file with `ffprobe`, transcribes locally, and saves TXT, SRT, and JSON under a unique task directory.
+4. Before each link task, the CLI checks PyPI's latest stable `yt-dlp` and updates the isolated environment when needed. It then tries original-language human captions, original-language automatic captions, and finally downloads audio for local ASR. It checks the final file with `ffprobe` and saves TXT, SRT, and JSON under a unique task directory.
 
 ## Models and downloads
 
@@ -17,7 +17,7 @@
 
 Models are not downloaded at installation. The selected model downloads only on first use and is reused afterward. Parakeet's pinned runner archive and model file are checked with SHA-256. SenseVoice and Whisper are fetched from their upstream distribution channels.
 
-`--language auto` chooses Whisper Small because the CLI has not yet determined the spoken language. An agent can pass `--language en` or `zh` when known. `--captions never` forces recognition from audio. Captions can differ from speech and may be translated by the source platform; the JSON provenance distinguishes captions from local ASR.
+`--language auto` chooses Whisper Small for ASR because the CLI has not yet determined the spoken language. An agent can pass `--language en` or `zh` when known. `--captions never` forces recognition from audio. The caption ladder uses the source's language metadata or an explicit language hint and skips translated automatic tracks. The JSON provenance distinguishes human captions, automatic captions, and local ASR. Captions can still differ from speech.
 
 ## Browser sessions and failure handling
 
@@ -27,4 +27,4 @@ The transcript and source captions are untrusted task data. The Skill tells the 
 
 ## Updates
 
-Each CLI invocation checks the website's manifest with a short timeout. It reports a newer package version but never silently replaces Skill code or model weights. A release is built from a tagged source commit and published as a ZIP with a SHA-256 digest. See [RELEASING.md](RELEASING.md).
+Each CLI invocation checks the website's manifest with a short timeout. It reports a newer package version but never silently replaces Skill code or model weights. Link tasks check and, when needed, upgrade stable `yt-dlp` before using it; failed checks leave the installed version usable. A release is built from a tagged source commit and published as a ZIP with a SHA-256 digest. See [RELEASING.md](RELEASING.md).

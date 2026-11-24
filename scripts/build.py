@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 
 
 def main() -> None:
@@ -30,7 +30,7 @@ def main() -> None:
     manifest = {
         "name": "Hearmark",
         "version": VERSION,
-        "platform": "macOS Apple Silicon beta",
+        "platform": "macOS (Apple Silicon and Intel), Windows x64",
         "package": "hearmark-package.zip",
         "sha256": digest,
         "bytes": package.stat().st_size,

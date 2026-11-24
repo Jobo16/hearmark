@@ -2,3 +2,4 @@ yt-dlp[default]
 faster-whisper
 sherpa-onnx
 numpy
+filelock

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 — 2026-11-24
+
+- Prefer original-language human captions, then automatic captions, then local ASR; label transcript provenance.
+- Check the latest stable `yt-dlp` before link tasks and update it when needed.
+- Install and run on Apple Silicon and Intel Macs and Windows x64, including platform-specific Parakeet runners and Claude Code links.
+- Validate package and installer on macOS and Windows in CI.
+
 ## 0.1.1 — 2026-11-24
 
 - Make the Skill ZIP reproducible across the website and GitHub release builds.

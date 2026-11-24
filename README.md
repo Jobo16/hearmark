@@ -10,14 +10,14 @@
 
 ## What it does
 
-- Prefers available platform captions for a quick transcript, or recognizes the actual audio when captions are absent or you request it.
+- Prefers original-language human captions, then original-language automatic captions, then local speech recognition when captions are absent or you request audio recognition.
 - Saves **TXT, SRT, and JSON** locally and returns their absolute paths to the agent.
 - Uses **Parakeet 110M Q8 for English**, **SenseVoice Small for Chinese**, and **Whisper Small for other or unspecified languages** by default. Whisper Medium, Turbo, and Large v3 are optional.
 - Downloads each model from its original provider on first use and caches it locally. The website serves only the small Skill package and version manifest.
 - Tries public media access first. If the site requires login, it can retry using a local browser session. Cookie values stay on the user's computer.
-- Checks the Hearmark package version on each run; an unavailable update check does not block transcription.
+- Checks the Hearmark package version on each run and checks the latest stable `yt-dlp` before each link task, upgrading it when needed. An unavailable update check does not block transcription.
 
-Hearmark is currently a **macOS Apple Silicon beta**. It has no hosted transcription service, account, or payment flow. Access restrictions, region locks, DRM, and platform changes can prevent a download. Model output can be wrong; review important passages.
+Hearmark supports **Apple Silicon and Intel Macs, plus Windows x64**. It has no hosted transcription service, account, or payment flow. Access restrictions, region locks, DRM, and platform changes can prevent a download. Model output can be wrong; review important passages.
 
 ## Install
 
@@ -25,11 +25,9 @@ The easiest route is to copy the setup prompt from [hearmark.jobo.ink](https://h
 
 For a source checkout:
 
-```sh
-python3 .agents/skills/hearmark/scripts/install.py --manifest-url https://hearmark.jobo.ink/manifest.json
-```
+On macOS, run `python3 .agents/skills/hearmark/scripts/install.py --manifest-url https://hearmark.jobo.ink/manifest.json`. On Windows, run `py -3 .agents/skills/hearmark/scripts/install.py --manifest-url https://hearmark.jobo.ink/manifest.json`.
 
-The installer puts the canonical Skill at `~/.agents/skills/hearmark` and creates `~/.claude/skills/hearmark` as a symlink to it. Python packages go into a separate virtual environment at `~/.local/share/hearmark/venv`. You also need `ffmpeg` and `ffprobe` on `PATH` (`brew install ffmpeg` on macOS).
+The installer puts the canonical Skill at `~/.agents/skills/hearmark` and links `~/.claude/skills/hearmark` to it (a junction on Windows). Python packages go into a separate virtual environment at `~/.local/share/hearmark/venv`. Python 3.11 or newer and `ffmpeg`/`ffprobe` on `PATH` are required (`brew install ffmpeg` on macOS). On Windows, use the same paths relative to your user home and replace `python3` with `py -3` in the examples below.
 
 Run a diagnostic and then ask your agent to transcribe a source:
 
@@ -59,7 +57,7 @@ python3 scripts/build.py
 python3 -m http.server 8765 --directory dist
 ```
 
-CI validates Python and JavaScript syntax, Skill packaging, and the ZIP hash. Changes go through pull requests; maintainers test a representative local file and URL before a release. Tags matching `v*` build a GitHub release ZIP. The website is deployed separately after the source and release package are verified. See the [release checklist](docs/RELEASING.md).
+CI validates Python and JavaScript syntax, Skill packaging, the ZIP hash, and installation on macOS and Windows. Changes go through pull requests; maintainers test a representative local file and URL before a release. Tags matching `v*` build a GitHub release ZIP. The website is deployed separately after the source and release package are verified. See the [release checklist](docs/RELEASING.md).
 
 ## License
 
