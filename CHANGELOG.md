@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 — 2026-11-24
+
+- Make the Skill ZIP reproducible across the website and GitHub release builds.
+
 ## 0.1.0 — 2026-11-24
 
 - Initial macOS Apple Silicon beta.

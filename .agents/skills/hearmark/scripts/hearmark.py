@@ -19,7 +19,7 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 CONFIG = Path.home() / ".config/hearmark/config.json"
 CACHE = Path.home() / ".cache/hearmark/models"
 PARAKEET_DIR = Path.home() / ".cache/hearmark/parakeet"

@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 
 def main() -> None:
@@ -19,10 +19,13 @@ def main() -> None:
     for name in ("index.html", "style.css", "app.js", "favicon.svg", "robots.txt", "sitemap.xml", "llms.txt"):
         shutil.copy2(ROOT / "site" / name, DIST / name)
     package = DIST / "hearmark-package.zip"
-    with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_DEFLATED) as output:
+    with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_STORED) as output:
         for file in sorted((ROOT / ".agents/skills/hearmark").rglob("*")):
             if file.is_file() and "__pycache__" not in file.parts:
-                output.write(file, file.relative_to(ROOT))
+                info = zipfile.ZipInfo(file.relative_to(ROOT).as_posix(), date_time=(1980, 1, 1, 0, 0, 0))
+                info.create_system = 3
+                info.external_attr = 0o644 << 16
+                output.writestr(info, file.read_bytes())
     digest = hashlib.sha256(package.read_bytes()).hexdigest()
     manifest = {
         "name": "Hearmark",
