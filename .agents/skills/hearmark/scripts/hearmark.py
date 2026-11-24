@@ -21,7 +21,7 @@ import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 CONFIG = Path.home() / ".config/hearmark/config.json"
 CACHE = Path.home() / ".cache/hearmark/models"
 PARAKEET_DIR = Path.home() / ".cache/hearmark/parakeet"
@@ -47,7 +47,6 @@ MODELS = {
     "whisper-large-v3": {"description": "Largest Whisper quality option", "languages": "multilingual"},
 }
 AUTH_MARKERS = ("sign in", "log in", "login", "not a bot", "fresh cookies", "captcha", "http error 403")
-SUPPORTED_HOSTS = ("youtube.com", "youtu.be", "douyin.com", "iesdouyin.com", "tiktok.com")
 TIME_RE = re.compile(r"(?P<start>\d\d:\d\d:\d\d[.,]\d{3})\s+-->\s+(?P<end>\d\d:\d\d:\d\d[.,]\d{3})")
 TAG_RE = re.compile(r"<[^>]+>")
 
@@ -92,8 +91,7 @@ def is_url(value: str) -> bool:
 
 def validate_url(value: str) -> bool:
     parsed = urlparse(value)
-    host = (parsed.hostname or "").lower()
-    return parsed.scheme == "https" and any(host == base or host.endswith("." + base) for base in SUPPORTED_HOSTS)
+    return parsed.scheme == "https" and bool(parsed.hostname) and parsed.username is None and parsed.password is None
 
 
 def browser_candidates(requested: str) -> list[str]:
@@ -228,12 +226,13 @@ def caption_track(tracks: dict, spoken: str, requested: str, allow_single: bool 
         return next(iter(tracks)) if allow_single and len(tracks) == 1 else None
     base = preferred.lower().split("-")[0]
     matches = [code for code in tracks if code.lower() == preferred.lower() or code.lower().split("-")[0] == base]
-    matches = [code for code in matches if code.lower() == base or code.lower().endswith("-orig") or (base == "zh" and code.lower() in ("zh-hans", "zh-hant"))]
+    matches = [code for code in matches if code.lower() == base or code.lower().endswith("-orig") or (base == "zh" and code.lower().startswith("zh-"))]
     return matches[0] if matches else None
 
 
 def try_captions(url: str, directory: Path, language: str, browser: str) -> tuple[list[dict], str | None, list[str], str | None, str | None]:
-    code, lines, used_browser, tried = run_with_browser_fallback(["--dump-single-json", "--skip-download", url], browser)
+    info_arguments = ["--dump-single-json", "--skip-download", url]
+    code, lines, used_browser, tried = run_with_browser_fallback(info_arguments, browser)
     if code != 0:
         return [], used_browser, tried, None, None
     try:
@@ -241,6 +240,23 @@ def try_captions(url: str, directory: Path, language: str, browser: str) -> tupl
     except (StopIteration, ValueError):
         return [], used_browser, tried, None, None
     spoken = str(info.get("language") or "")
+    if not any(caption_track(info.get(key) or {}, spoken, language, allow_single=key == "subtitles") for key in ("subtitles", "automatic_captions")):
+        for candidate in browser_candidates(browser):
+            if candidate in tried:
+                continue
+            log(f"No usable captions were visible without a browser session. Checking this computer's {candidate} session locally.")
+            tried.append(candidate)
+            session_code, session_lines = run_ytdlp(info_arguments, candidate)
+            if session_code != 0:
+                continue
+            try:
+                session_info = next(json.loads(line) for line in reversed(session_lines) if line.startswith("{"))
+            except (StopIteration, ValueError):
+                continue
+            session_spoken = str(session_info.get("language") or "")
+            if any(caption_track(session_info.get(key) or {}, session_spoken, language, allow_single=key == "subtitles") for key in ("subtitles", "automatic_captions")):
+                info, spoken, used_browser = session_info, session_spoken, candidate
+                break
     for key, option, provenance in (("subtitles", "--write-subs", "manual_captions"), ("automatic_captions", "--write-auto-subs", "automatic_captions")):
         track = caption_track(info.get(key) or {}, spoken, language, allow_single=key == "subtitles")
         if not track:
@@ -505,7 +521,7 @@ def transcribe(args: argparse.Namespace, update: dict) -> int:
         return emit({"status": "error", "kind": "missing_dependency", "message": "ffmpeg/ffprobe is required", "update": update})
     source = args.source
     if is_url(source) and not validate_url(source):
-        return emit({"status": "error", "kind": "unsupported_url", "message": "Use one HTTPS YouTube, Douyin, or TikTok link", "update": update})
+        return emit({"status": "error", "kind": "unsupported_url", "message": "Use one HTTPS link supported by yt-dlp, or a local audio/video file", "update": update})
     if not is_url(source) and not Path(source).expanduser().is_file():
         return emit({"status": "error", "kind": "missing_file", "message": "Local media file was not found", "update": update})
     output_root = args.output_dir.expanduser().resolve()
