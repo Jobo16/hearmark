@@ -1,0 +1,15 @@
+# Hearmark
+
+> Open-source, local-first video and audio transcription for Codex and Claude Code.
+
+Hearmark is an Agent Skill, not a hosted transcription API. The website distributes a small installable Skill package and a version manifest. The installed Skill can fetch user-provided YouTube, Douyin, and TikTok links or read local media, then save TXT, SRT, and JSON transcripts on the user's computer.
+
+Model weights are downloaded on first use from their original providers and cached locally. English defaults to Parakeet 110M Q8; Chinese defaults to SenseVoice Small; other or unspecified languages default to Whisper Small. Whisper Medium, Turbo, and Large v3 can be selected explicitly. Captions can be preferred for speed, or local audio recognition can be forced.
+
+Some sites require an authenticated browser session. Hearmark can read local browser cookies only on the user's computer; it does not send them to Hearmark. Restricted, unavailable, or DRM media can still fail.
+
+- Website and setup prompt: https://hearmark.jobo.ink/
+- Source code and installation guide: https://github.com/Jobo16/hearmark
+- Skill instructions: https://github.com/Jobo16/hearmark/blob/main/.agents/skills/hearmark/SKILL.md
+- Model and architecture notes: https://github.com/Jobo16/hearmark/blob/main/docs/ARCHITECTURE.md
+- Release package metadata: https://hearmark.jobo.ink/manifest.json

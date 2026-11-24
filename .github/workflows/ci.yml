@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check and build
+        run: |
+          python3 -m py_compile .agents/skills/hearmark/scripts/*.py
+          node --check site/app.js
+          python3 scripts/build.py
+      - name: Verify distribution package
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          root = pathlib.Path('dist')
+          manifest = json.loads((root / 'manifest.json').read_text())
+          package = root / manifest['package']
+          assert hashlib.sha256(package.read_bytes()).hexdigest() == manifest['sha256']
+          with zipfile.ZipFile(package) as archive:
+              assert archive.testzip() is None
+              assert '.agents/skills/hearmark/SKILL.md' in archive.namelist()
+              assert '.agents/skills/hearmark/scripts/install.py' in archive.namelist()
+          for name in ('index.html', 'robots.txt', 'sitemap.xml', 'llms.txt'):
+              assert (root / name).is_file()
+          PY

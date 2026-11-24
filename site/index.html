@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1320">
+  <meta name="description" content="Transcribe YouTube, Douyin, TikTok, and local audio in Codex or Claude Code. Hearmark runs Parakeet, SenseVoice, or Whisper locally and saves TXT, SRT, and JSON.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://hearmark.jobo.ink/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hearmark">
+  <meta property="og:title" content="Hearmark — local video transcription for coding agents">
+  <meta property="og:description" content="Give Codex or Claude Code a video link or local file. Hearmark uses local speech models and returns a real transcript.">
+  <meta property="og:url" content="https://hearmark.jobo.ink/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Hearmark — local transcription for Codex and Claude Code">
+  <meta name="twitter:description" content="Local-first video transcription with Parakeet, SenseVoice, and Whisper.">
+  <title>Hearmark — local transcription for Codex and Claude Code</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Hearmark",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "macOS Apple Silicon",
+    "url": "https://hearmark.jobo.ink/",
+    "codeRepository": "https://github.com/Jobo16/hearmark",
+    "description": "An open-source Agent Skill that downloads user-provided media and transcribes it locally with Parakeet, SenseVoice, or Whisper.",
+    "isAccessibleForFree": true,
+    "license": "https://github.com/Jobo16/hearmark/blob/main/LICENSE"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type":"Question","name":"Does Hearmark upload my audio to its server?","acceptedAnswer":{"@type":"Answer","text":"No. Hearmark downloads media and runs speech recognition on your computer. The website only distributes the Skill package and version manifest."}},
+      {"@type":"Question","name":"When are speech models downloaded?","acceptedAnswer":{"@type":"Answer","text":"A model is downloaded from its original provider the first time you choose it. Later runs reuse the local cache. Parakeet and Whisper weights come from Hugging Face; SenseVoice weights come from a sherpa-onnx GitHub release."}},
+      {"@type":"Question","name":"Which languages does Hearmark support?","acceptedAnswer":{"@type":"Answer","text":"The default model is Parakeet Q8 for English, SenseVoice Small for Chinese, and Whisper Small for unspecified or other languages. Larger Whisper models are optional."}},
+      {"@type":"Question","name":"Does every video link work?","acceptedAnswer":{"@type":"Answer","text":"No. Private, unavailable, region-restricted, or DRM-protected media may fail. Hearmark reports the access or processing error instead of inventing a transcript."}}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar shell">
+    <a class="brand" href="#top" aria-label="Hearmark home">
+      <span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span>hearmark<span class="brand-dot">.</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#how">How it works</a>
+      <a href="#models">Models</a>
+      <a href="#install">Get the skill</a>
+      <a href="https://github.com/Jobo16/hearmark">GitHub</a>
+    </nav>
+    <a class="top-cta" href="#install">Install beta <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="signal"></span> LOCAL FIRST · AGENT NATIVE</div>
+        <h1>Drop a link.<br><em>Get the words.</em></h1>
+        <p class="hero-sub">Video transcripts, made by the agent you already use. Hearmark fetches the media, runs a model on your computer, and gives Codex or Claude Code a real transcript to work with.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#install">Get the setup prompt <span aria-hidden="true">↗</span></a>
+          <a class="button button-ghost" href="#how">See the workflow <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-foot"><span class="foot-mark">✓</span> No account <span class="foot-sep"></span><span class="foot-mark">✓</span> No audio upload <span class="foot-sep"></span><span class="foot-mark">✓</span> Your agent stays in control</div>
+      </div>
+      <div class="hero-visual" aria-label="Illustrative agent transcript conversation">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="conversation">
+          <div class="window-head"><div class="window-dots"><b></b><b></b><b></b></div><span>AGENT SESSION</span><span class="head-status"><span></span> LOCAL</span></div>
+          <div class="chat-body">
+            <div class="chat-label">YOU</div>
+            <div class="chat-user">Transcribe this video for me.<br><span>youtube.com/watch?v=...</span></div>
+            <div class="connector"><span></span><span></span><span></span></div>
+            <div class="chat-label agent-label">HEARMARK</div>
+            <div class="process"><span class="process-icon">◉</span><div><strong>Transcript ready</strong><small>Source: local audio recognition · Model: Parakeet Q8</small></div><span class="check">✓</span></div>
+            <div class="transcript-preview">“Here’s what was said, with timestamps and a file you can keep…”</div>
+            <div class="file-row"><span>≡</span> transcript.txt <span>↗</span></div>
+          </div>
+        </div>
+        <span class="visual-caption">Illustrative workflow · results depend on source access and model</span>
+      </div>
+    </section>
+
+    <section class="stat-strip shell" aria-label="Product properties">
+      <div><strong>01</strong><span>One link or local file</span></div>
+      <div><strong>02</strong><span>Captions or local ASR</span></div>
+      <div><strong>03</strong><span>Transcript or clear reason</span></div>
+    </section>
+
+    <section id="how" class="section shell">
+      <div class="section-heading"><span class="kicker">THE WORKFLOW</span><h2>The interface is<br><em>your agent.</em></h2><p>No extra workspace to learn. Ask for a transcript in the conversation where you already do your work.</p></div>
+      <div class="steps">
+        <article class="step"><span class="step-num">01 / ASK</span><div class="step-icon">↗</div><h3>Give it a source</h3><p>Paste a YouTube, Douyin, or TikTok link, or point to a local audio or video file.</p></article>
+        <article class="step"><span class="step-num">02 / FETCH</span><div class="step-icon">≈</div><h3>Get the speech</h3><p>Use available captions first. Otherwise fetch the audio; if the site asks for verification, try a local browser session.</p></article>
+        <article class="step"><span class="step-num">03 / READ</span><div class="step-icon">≡</div><h3>Work with the words</h3><p>Receive TXT, SRT, and JSON files. Ask your agent to summarize, translate, search, or quote the actual transcript.</p></article>
+      </div>
+    </section>
+
+    <section id="models" class="models-section">
+      <div class="shell models-grid">
+        <div class="models-intro"><span class="kicker">YOUR MACHINE, YOUR MODEL</span><h2>Pick the pace.<br><em>Pick the depth.</em></h2><p>Start with the recommended local option or tell your agent which model to use. Weights download from their original providers only when first needed; transcription stays on your computer.</p><div class="model-note"><span>✳</span><p>Automatic selection uses Parakeet Q8 for English, SenseVoice Small for Chinese, and Whisper Small when the language is unspecified or different. Larger models are an explicit choice.</p></div></div>
+        <div class="model-list">
+          <div class="model-list-head"><span>LOCAL MODELS</span><span>FIRST-USE DOWNLOAD</span></div>
+          <div class="model-item"><div><b>Parakeet 110M Q8</b><small>Fast · English</small></div><span class="model-tag fast">FAST</span></div>
+          <div class="model-item"><div><b>SenseVoice Small</b><small>Fast · Chinese + English</small></div><span class="model-tag fast">FAST</span></div>
+          <div class="model-item"><div><b>Whisper Small</b><small>Multilingual · lighter</small></div><span class="model-tag">BALANCED</span></div>
+          <div class="model-item"><div><b>Whisper Medium</b><small>Multilingual · more detail</small></div><span class="model-tag">QUALITY</span></div>
+          <div class="model-item"><div><b>Whisper Turbo / Large v3</b><small>Multilingual · heavier</small></div><span class="model-tag">LARGER</span></div>
+          <div class="model-list-foot">Model speed and quality vary by device and recording. Check the transcript before relying on important details.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" class="install-section shell">
+      <div class="install-title"><span class="kicker">GET STARTED</span><h2>One prompt.<br><em>Your agent handles setup.</em></h2><p>Copy the prompt into Codex or Claude Code. The agent downloads the small package, checks it, installs the Skill, and runs a local diagnostic.</p></div>
+      <div class="install-card">
+        <div class="install-card-top"><div class="agent-tabs" role="tablist" aria-label="Choose your agent"><button type="button" class="agent-tab active" data-agent="Codex" role="tab" aria-selected="true">Codex</button><button type="button" class="agent-tab" data-agent="Claude Code" role="tab" aria-selected="false">Claude Code</button></div><span class="platform">macOS Apple Silicon beta</span></div>
+        <div class="prompt-label">SEND THIS TO YOUR AGENT</div>
+        <pre id="install-prompt" class="prompt" aria-live="polite">Loading setup prompt…</pre>
+        <div class="install-actions"><button id="copy-prompt" class="button button-primary" type="button">Copy prompt <span aria-hidden="true">↗</span></button><a id="download-package" class="download-link" href="/hearmark-package.zip" download>Download package instead <span aria-hidden="true">↓</span></a></div>
+      </div>
+      <p class="install-footnote">The website distributes files and instructions. The actual download, browser-session use, model inference, and saved transcripts happen on your computer.</p>
+    </section>
+
+    <section class="detail-section shell">
+      <div class="detail-card"><span class="detail-symbol">⌁</span><h3>Browser session when needed</h3><p>Public access is tried first. If a site challenges the request, Hearmark tells you which local browser session it uses. Cookies are never sent to Hearmark.</p></div>
+      <div class="detail-card"><span class="detail-symbol">↻</span><h3>Checks for updates</h3><p>Every run checks the published package version. A failed update check does not stop an offline or otherwise working task.</p></div>
+      <div class="detail-card"><span class="detail-symbol">◇</span><h3>Honest failures</h3><p>Private, unavailable, or restricted media can still fail. The agent gets a classified error and a next step, instead of a made-up transcript.</p></div>
+    </section>
+
+    <section id="faq" class="faq-section shell" aria-labelledby="faq-title">
+      <div><span class="kicker">GOOD TO KNOW</span><h2 id="faq-title">Frequently<br><em>asked.</em></h2></div>
+      <div class="faq-list">
+        <details><summary>Does Hearmark upload my audio to its server?</summary><p>No. Hearmark downloads media and runs speech recognition on your computer. The website only distributes the Skill package and version manifest.</p></details>
+        <details><summary>When are speech models downloaded?</summary><p>A model is downloaded from its original provider the first time you choose it. Later runs reuse the local cache. Parakeet and Whisper weights come from Hugging Face; SenseVoice weights come from a sherpa-onnx GitHub release.</p></details>
+        <details><summary>Which languages does Hearmark support?</summary><p>The default model is Parakeet Q8 for English, SenseVoice Small for Chinese, and Whisper Small for unspecified or other languages. Larger Whisper models are optional.</p></details>
+        <details><summary>Does every video link work?</summary><p>No. Private, unavailable, region-restricted, or DRM-protected media may fail. Hearmark reports the access or processing error instead of inventing a transcript.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.1.0</span></footer>
+</body>
+</html>

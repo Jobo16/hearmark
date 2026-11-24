@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest a focused improvement
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What task is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Resource, privacy, or maintenance tradeoffs

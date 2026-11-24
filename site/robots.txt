@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hearmark.jobo.ink/sitemap.xml
