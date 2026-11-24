@@ -48,6 +48,7 @@ Use `--captions never` to recognize the audio instead of using platform captions
 | [`.agents/skills/hearmark`](.agents/skills/hearmark/SKILL.md) | Agent instructions, installer, CLI, and runtime requirements |
 | [`site/`](site/index.html) | Static product and installation page |
 | [`scripts/build.py`](scripts/build.py) | Builds `dist/`, the ZIP, and the version manifest |
+| [`scripts/deploy-site.sh`](scripts/deploy-site.sh) | Deploys the static website to Jobo's Caddy server |
 | [`docs/`](docs/ARCHITECTURE.md) | Architecture, limitations, and release process |
 
 The project does not bundle third-party model weights or a copy of `yt-dlp`. Their licenses and terms remain with their original projects. Respect the media platform's terms and only process media you are allowed to access.
@@ -59,7 +60,7 @@ python3 scripts/build.py
 python3 -m http.server 8765 --directory dist
 ```
 
-CI validates Python and JavaScript syntax, Skill packaging, the ZIP hash, and installation on macOS and Windows. Changes go through pull requests; maintainers test a representative local file and URL before a release. Tags matching `v*` build a GitHub release ZIP. The website is deployed separately after the source and release package are verified. See the [release checklist](docs/RELEASING.md).
+CI validates Python and JavaScript syntax, Skill packaging, the ZIP hash, and installation on macOS and Windows. Changes go through pull requests; maintainers test a representative local file and URL before a release. Tags matching `v*` build a GitHub release ZIP. The website is deployed to Jobo's server after the source and release package are verified. See the [release checklist](docs/RELEASING.md) and [website deployment guide](docs/DEPLOYMENT.md).
 
 ## License
 

@@ -1,0 +1,8 @@
+# BEGIN hearmark
+hearmark.jobo.ink {
+	root * /srv/sites/hearmark
+	encode zstd gzip
+	header Cache-Control "no-cache, max-age=0, must-revalidate"
+	file_server
+}
+# END hearmark
