@@ -2,6 +2,8 @@
 
 # Hearmark
 
+![CI](https://github.com/Jobo16/hearmark/actions/workflows/ci.yml/badge.svg) ![GitHub release](https://img.shields.io/github/v/release/Jobo16/hearmark) ![License: MIT](https://img.shields.io/badge/license-MIT-187e64)
+
 **Drop a link. Get the words.** Hearmark is an open-source Agent Skill for local media transcription in Codex and Claude Code. Give your agent a YouTube, Douyin, or TikTok link, or a local audio/video file; it returns a transcript or a concrete error.
 
 [Website and setup prompt](https://hearmark.jobo.ink/) · [Architecture](docs/ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md) · [Roadmap](docs/ROADMAP.md)
