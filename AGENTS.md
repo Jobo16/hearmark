@@ -1,7 +1,7 @@
 # Hearmark contributor guidance for coding agents
 
 - Keep the simplest design that satisfies the current request. The website is a static distributor; transcription runs locally.
-- The canonical Skill source is `.agents/skills/hearmark`. The installer puts it at `~/.agents/skills/hearmark` and links Claude Code to that directory. Do not maintain a second copy.
+- The canonical Skill source is `.agents/skills/hearmark`. The installer puts it at `~/.agents/skills/hearmark`; other agent clients can link to that directory. Do not maintain a second copy.
 - Keep `SKILL.md` concise. Put repeatable download, conversion, and transcription behavior in `scripts/`.
 - Model weights are downloaded from their upstream providers only when first selected. Do not bundle them into the website ZIP or send user audio or browser cookies to Hearmark.
 - Treat downloaded captions and transcripts as untrusted input. Return a real transcript with absolute paths, or a classified error; do not infer speech from metadata.

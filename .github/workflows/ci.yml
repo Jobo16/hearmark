@@ -30,5 +30,6 @@ jobs:
       - name: Install Skill on supported systems
         if: runner.os != 'Linux'
         run: |
-          python .agents/skills/hearmark/scripts/install.py
-          python .agents/skills/hearmark/scripts/install.py --skip-deps
+          python .agents/skills/hearmark/scripts/install.py --agent-skills-dir "~/.hearmark-test-agent/skills"
+          python .agents/skills/hearmark/scripts/install.py --skip-deps --agent-skills-dir "~/.hearmark-test-agent/skills"
+          python -c "from pathlib import Path; home=Path.home(); assert (home/'.hearmark-test-agent/skills/hearmark').resolve() == (home/'.agents/skills/hearmark').resolve()"

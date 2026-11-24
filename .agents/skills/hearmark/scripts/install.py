@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install Hearmark's local Skill and runtime for Codex and Claude Code."""
+"""Install Hearmark's local Skill and link it into an agent's Skill directory."""
 
 from __future__ import annotations
 
@@ -13,12 +13,13 @@ import sys
 import tempfile
 from pathlib import Path
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest-url", default="https://hearmark.jobo.ink/manifest.json")
+    parser.add_argument("--agent-skills-dir", type=Path, action="append", default=[], help="Additional user Skill directory for an agent that does not read ~/.agents/skills")
     parser.add_argument("--skip-deps", action="store_true", help="Validate Skill placement without installing Python packages")
     args = parser.parse_args()
     source = Path(__file__).resolve().parents[1]
@@ -34,9 +35,11 @@ def main() -> int:
         if target.is_symlink() or not marker.is_file():
             parser.error(f"Refusing to replace an unrecognized Skill at {target}")
 
-    claude = Path.home() / ".claude/skills/hearmark"
-    if (claude.exists() or claude.is_symlink()) and claude.resolve() != target.resolve():
-        parser.error(f"Refusing to replace an existing Claude Skill at {claude}")
+    links = list(dict.fromkeys(root.expanduser().resolve() / "hearmark" for root in args.agent_skills_dir))
+    links = [link for link in links if link != target]
+    for link in links:
+        if (link.exists() or link.is_symlink()) and link.resolve() != target.resolve():
+            parser.error(f"Refusing to replace an existing Skill at {link}")
 
     venv = Path.home() / ".local/share/hearmark/venv"
     runtime = venv / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
@@ -69,19 +72,20 @@ def main() -> int:
                 backup.rename(target)
             raise
 
-    claude.parent.mkdir(parents=True, exist_ok=True)
-    if not claude.exists():
-        if sys.platform == "win32":
-            subprocess.run(["cmd", "/c", "mklink", "/J", str(claude), str(target)], check=True)
-        else:
-            claude.symlink_to(target, target_is_directory=True)
+    for link in links:
+        link.parent.mkdir(parents=True, exist_ok=True)
+        if not link.exists():
+            if sys.platform == "win32":
+                subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], check=True)
+            else:
+                link.symlink_to(target, target_is_directory=True)
 
     config = Path.home() / ".config/hearmark/config.json"
     config.parent.mkdir(parents=True, exist_ok=True)
     config.write_text(json.dumps({"manifest_url": args.manifest_url, "installed_version": VERSION}, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({
-        "status": "ok", "version": VERSION, "codex_skill": str(target),
-        "claude_skill": str(claude), "runtime": str(runtime),
+        "status": "ok", "version": VERSION, "skill": str(target),
+        "linked_skills": [str(link) for link in links], "runtime": str(runtime),
         "dependencies_installed": not args.skip_deps,
     }))
     return 0

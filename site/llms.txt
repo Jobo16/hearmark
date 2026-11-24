@@ -1,6 +1,6 @@
 # Hearmark
 
-> Open-source, local-first video and audio transcription for Codex and Claude Code.
+> Open-source, local-first video and audio transcription for AI agents.
 
 Hearmark is an Agent Skill, not a hosted transcription API. The website distributes a small installable Skill package and a version manifest. The installed Skill can fetch user-provided YouTube, Douyin, and TikTok links or read local media, then save TXT, SRT, and JSON transcripts on the user's computer.
 

@@ -21,7 +21,7 @@ import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 CONFIG = Path.home() / ".config/hearmark/config.json"
 CACHE = Path.home() / ".cache/hearmark/models"
 PARAKEET_DIR = Path.home() / ".cache/hearmark/parakeet"

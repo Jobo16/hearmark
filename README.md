@@ -4,7 +4,7 @@
 
 ![CI](https://github.com/Jobo16/hearmark/actions/workflows/ci.yml/badge.svg) ![GitHub release](https://img.shields.io/github/v/release/Jobo16/hearmark) ![License: MIT](https://img.shields.io/badge/license-MIT-187e64)
 
-**Drop a link. Get the words.** Hearmark is an open-source Agent Skill for local media transcription in Codex and Claude Code. Give your agent a YouTube, Douyin, or TikTok link, or a local audio/video file; it returns a transcript or a concrete error.
+**Drop a link. Get the words.** Hearmark is an open-source Agent Skill and local CLI for AI agents. Give your agent a YouTube, Douyin, or TikTok link, or a local audio/video file; it returns a transcript or a concrete error.
 
 [Website and setup prompt](https://hearmark.jobo.ink/) · [Architecture](docs/ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md) · [Roadmap](docs/ROADMAP.md)
 
@@ -21,13 +21,15 @@ Hearmark supports **Apple Silicon and Intel Macs, plus Windows x64**. It has no 
 
 ## Install
 
-The easiest route is to copy the setup prompt from [hearmark.jobo.ink](https://hearmark.jobo.ink/) into Codex or Claude Code. The prompt has the current ZIP URL and SHA-256.
+The easiest route is to copy the setup prompt from [hearmark.jobo.ink](https://hearmark.jobo.ink/) into your local AI agent. The prompt has the current ZIP URL and SHA-256 and asks the agent to use its own Skill discovery path.
 
 For a source checkout:
 
 On macOS, run `python3 .agents/skills/hearmark/scripts/install.py --manifest-url https://hearmark.jobo.ink/manifest.json`. On Windows, run `py -3 .agents/skills/hearmark/scripts/install.py --manifest-url https://hearmark.jobo.ink/manifest.json`.
 
-The installer puts the canonical Skill at `~/.agents/skills/hearmark` and links `~/.claude/skills/hearmark` to it (a junction on Windows). Python packages go into a separate virtual environment at `~/.local/share/hearmark/venv`. Python 3.11 or newer and `ffmpeg`/`ffprobe` on `PATH` are required (`brew install ffmpeg` on macOS). On Windows, use the same paths relative to your user home and replace `python3` with `py -3` in the examples below.
+The installer puts the canonical Skill at `~/.agents/skills/hearmark`. Codex, Cursor, Gemini CLI, OpenCode, and GitHub Copilot CLI discover that user-level location. For an agent with another Skill directory, pass `--agent-skills-dir <directory>`; the installer creates a symlink to the canonical Skill (a junction on Windows), without copying it. For example, Claude Code uses `--agent-skills-dir ~/.claude/skills`. You can repeat the option for multiple agents. Agents without Skill support can run the same local CLI directly if they have local command access. Remote agents need access to the same computer, runtime, and browser session to use local models and cookies.
+
+Python packages go into a separate virtual environment at `~/.local/share/hearmark/venv`. Python 3.11 or newer and `ffmpeg`/`ffprobe` on `PATH` are required (`brew install ffmpeg` on macOS). On Windows, use the same paths relative to your user home and replace `python3` with `py -3` in the examples below.
 
 Run a diagnostic and then ask your agent to transcribe a source:
 

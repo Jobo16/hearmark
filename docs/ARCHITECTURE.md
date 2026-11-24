@@ -3,7 +3,7 @@
 ## Components
 
 1. The static website at `hearmark.jobo.ink` serves an installation prompt, a small ZIP, and `manifest.json`. It does not receive audio or browser cookies.
-2. The installer copies `.agents/skills/hearmark` to `~/.agents/skills/hearmark`, links Claude Code to the same directory, and creates an isolated Python environment.
+2. The installer copies `.agents/skills/hearmark` to the canonical `~/.agents/skills/hearmark`, optionally links it into any other agent's user Skill directory, and creates an isolated Python environment. On Windows the link is a junction.
 3. The Skill calls `scripts/launch.py`, which runs the local CLI from that environment. The CLI emits progress to stderr and one JSON outcome on stdout.
 4. Before each link task, the CLI checks PyPI's latest stable `yt-dlp` and updates the isolated environment when needed. It then tries original-language human captions, original-language automatic captions, and finally downloads audio for local ASR. It checks the final file with `ffprobe` and saves TXT, SRT, and JSON under a unique task directory.
 

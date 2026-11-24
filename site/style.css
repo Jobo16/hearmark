@@ -104,9 +104,6 @@ h2{font-size:clamp(45px,5vw,70px);margin-bottom:0}
 .install-title p{color:var(--muted);font-size:17px;max-width:590px;margin:22px auto 0}
 .install-card{max-width:830px;margin:48px auto 0;background:#fff;border:1px solid #d6e1e1;border-radius:16px;box-shadow:0 21px 55px #0b15230c;overflow:hidden}
 .install-card-top{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:16px 23px;border-bottom:1px solid #e4ebeb}
-.agent-tabs{background:#f1f5f3;border-radius:8px;padding:4px;display:flex}
-.agent-tab{border:0;background:transparent;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#72817c}
-.agent-tab.active{background:white;color:var(--ink);box-shadow:0 2px 8px #0b152314}
 .platform{font-size:11px;font-weight:700;color:#78867f;white-space:nowrap}
 .prompt-label{margin:25px 29px 12px;color:var(--green)}
 .prompt{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0e1d2c;color:#dceee9;margin:0 29px;padding:23px;border-radius:9px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;min-height:195px;font-size:12px}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 — 2026-11-24
+
+- Make the website's install prompt and product copy agent-neutral.
+- Keep one canonical Skill and allow any agent-specific Skill directory to link to it with `--agent-skills-dir`.
+- Document CLI use for local agents without Skill discovery.
+
 ## 0.2.0 — 2026-11-24
 
 - Prefer original-language human captions, then automatic captions, then local ASR; label transcript provenance.

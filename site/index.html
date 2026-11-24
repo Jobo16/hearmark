@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1320">
-  <meta name="description" content="Transcribe YouTube, Douyin, TikTok, and local audio in Codex or Claude Code. Hearmark runs Parakeet, SenseVoice, or Whisper locally and saves TXT, SRT, and JSON.">
+  <meta name="description" content="Transcribe YouTube, Douyin, TikTok, and local audio with your AI agent. Hearmark is an open Agent Skill that runs Parakeet, SenseVoice, or Whisper locally and saves TXT, SRT, and JSON.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://hearmark.jobo.ink/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Hearmark">
   <meta property="og:title" content="Hearmark — local video transcription for coding agents">
-  <meta property="og:description" content="Give Codex or Claude Code a video link or local file. Hearmark uses local speech models and returns a real transcript.">
+  <meta property="og:description" content="Give your AI agent a video link or local file. Hearmark uses local speech models and returns a real transcript.">
   <meta property="og:url" content="https://hearmark.jobo.ink/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Hearmark — local transcription for Codex and Claude Code">
+  <meta name="twitter:title" content="Hearmark — local transcription for AI agents">
   <meta name="twitter:description" content="Local-first video transcription with Parakeet, SenseVoice, and Whisper.">
-  <title>Hearmark — local transcription for Codex and Claude Code</title>
+  <title>Hearmark — local transcription for AI agents</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
@@ -40,6 +40,7 @@
     "mainEntity": [
       {"@type":"Question","name":"Does Hearmark upload my audio to its server?","acceptedAnswer":{"@type":"Answer","text":"No. Hearmark downloads media and runs speech recognition on your computer. The website only distributes the Skill package and version manifest."}},
       {"@type":"Question","name":"When are speech models downloaded?","acceptedAnswer":{"@type":"Answer","text":"A model is downloaded from its original provider the first time you choose it. Later runs reuse the local cache. Parakeet and Whisper weights come from Hugging Face; SenseVoice weights come from a sherpa-onnx GitHub release."}},
+      {"@type":"Question","name":"Which AI agents can use Hearmark?","acceptedAnswer":{"@type":"Answer","text":"Local agents that support Agent Skills can load Hearmark from their user Skill directory. The installer keeps one canonical copy and can link it into another agent's Skill directory. Agents with local command access can run its CLI directly."}},
       {"@type":"Question","name":"Which languages does Hearmark support?","acceptedAnswer":{"@type":"Answer","text":"The default model is Parakeet Q8 for English, SenseVoice Small for Chinese, and Whisper Small for unspecified or other languages. Larger Whisper models are optional."}},
       {"@type":"Question","name":"Does every video link work?","acceptedAnswer":{"@type":"Answer","text":"No. Private, unavailable, region-restricted, or DRM-protected media may fail. Hearmark reports the access or processing error instead of inventing a transcript."}}
     ]
@@ -67,7 +68,7 @@
       <div class="hero-copy">
         <div class="eyebrow"><span class="signal"></span> LOCAL FIRST · AGENT NATIVE</div>
         <h1>Drop a link.<br><em>Get the words.</em></h1>
-        <p class="hero-sub">Video transcripts, made by the agent you already use. Hearmark fetches the media, runs a model on your computer, and gives Codex or Claude Code a real transcript to work with.</p>
+        <p class="hero-sub">Video transcripts, made by the agent you already use. Hearmark fetches the media, runs a model on your computer, and gives your agent a real transcript to work with.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#install">Get the setup prompt <span aria-hidden="true">↗</span></a>
           <a class="button button-ghost" href="#how">See the workflow <span aria-hidden="true">↓</span></a>
@@ -123,9 +124,9 @@
     </section>
 
     <section id="install" class="install-section shell">
-      <div class="install-title"><span class="kicker">GET STARTED</span><h2>One prompt.<br><em>Your agent handles setup.</em></h2><p>Copy the prompt into Codex or Claude Code. The agent downloads the small package, checks it, installs the Skill, and runs a local diagnostic.</p></div>
+      <div class="install-title"><span class="kicker">GET STARTED</span><h2>One prompt.<br><em>Your agent handles setup.</em></h2><p>Copy the prompt into your local AI agent. It downloads the small package, checks it, installs the Skill where that agent can find it, and runs a diagnostic.</p></div>
       <div class="install-card">
-        <div class="install-card-top"><div class="agent-tabs" role="tablist" aria-label="Choose your agent"><button type="button" class="agent-tab active" data-agent="Codex" role="tab" aria-selected="true">Codex</button><button type="button" class="agent-tab" data-agent="Claude Code" role="tab" aria-selected="false">Claude Code</button></div><span class="platform">macOS Apple Silicon / Intel · Windows x64</span></div>
+        <div class="install-card-top"><span class="platform">Agent Skills + local CLI · macOS Apple Silicon / Intel · Windows x64</span></div>
         <div class="prompt-label">SEND THIS TO YOUR AGENT</div>
         <pre id="install-prompt" class="prompt" aria-live="polite">Loading setup prompt…</pre>
         <div class="install-actions"><button id="copy-prompt" class="button button-primary" type="button">Copy prompt <span aria-hidden="true">↗</span></button><a id="download-package" class="download-link" href="/hearmark-package.zip" download>Download package instead <span aria-hidden="true">↓</span></a></div>
@@ -143,6 +144,7 @@
       <div><span class="kicker">GOOD TO KNOW</span><h2 id="faq-title">Frequently<br><em>asked.</em></h2></div>
       <div class="faq-list">
         <details><summary>Does Hearmark upload my audio to its server?</summary><p>No. Hearmark downloads media and runs speech recognition on your computer. The website only distributes the Skill package and version manifest.</p></details>
+        <details><summary>Which AI agents can use it?</summary><p>Local agents that support Agent Skills can load it from their user Skill directory. The installer can link the same Skill into another directory when needed. Agents with local command access can run the CLI directly.</p></details>
         <details><summary>When are speech models downloaded?</summary><p>A model is downloaded from its original provider the first time you choose it. Later runs reuse the local cache. Parakeet and Whisper weights come from Hugging Face; SenseVoice weights come from a sherpa-onnx GitHub release.</p></details>
         <details><summary>Which languages does Hearmark support?</summary><p>The default model is Parakeet Q8 for English, SenseVoice Small for Chinese, and Whisper Small for unspecified or other languages. Larger Whisper models are optional.</p></details>
         <details><summary>Does every video link work?</summary><p>No. Private, unavailable, region-restricted, or DRM-protected media may fail. Hearmark reports the access or processing error instead of inventing a transcript.</p></details>
@@ -150,6 +152,6 @@
     </section>
   </main>
 
-  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.2.0</span></footer>
+  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.3.0</span></footer>
 </body>
 </html>
