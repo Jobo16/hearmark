@@ -5,7 +5,7 @@
 1. The static website at `hearmark.jobo.ink` serves an installation prompt, a small ZIP, and `manifest.json`. It does not receive audio or browser cookies.
 2. The installer copies `.agents/skills/hearmark` to the canonical `~/.agents/skills/hearmark`, optionally links it into any other agent's user Skill directory, and creates an isolated Python environment. On Windows the link is a junction.
 3. The Skill calls `scripts/launch.py`, which runs the local CLI from that environment. The CLI emits progress to stderr and one JSON outcome on stdout.
-4. Before each link task, the CLI checks PyPI's latest stable `yt-dlp` and updates the isolated environment when needed. It then tries original-language human captions, original-language automatic captions, and finally downloads audio for local ASR. It checks the final file with `ffprobe` and saves TXT, SRT, and JSON under a unique task directory.
+4. Any HTTPS URL is passed to `yt-dlp`, which decides whether it can extract that site; this includes Bilibili and its `b23.tv` short links as well as the many other supported extractors. Before each link task, the CLI checks PyPI's latest stable `yt-dlp` and updates the isolated environment when needed. It then tries original-language human captions, original-language automatic captions, and finally downloads audio for local ASR. It checks the final file with `ffprobe` and saves TXT, SRT, and JSON under a unique task directory.
 
 ## Models and downloads
 
@@ -21,7 +21,7 @@ Models are not downloaded at installation. The selected model downloads only on 
 
 ## Browser sessions and failure handling
 
-Public access is attempted first. On a login or platform challenge, `yt-dlp` may read cookies directly from a local browser profile; no cookie value is printed, exported, or sent to Hearmark. A browser session cannot bypass DRM or unavailable media. The CLI classifies failures and gives the agent a reason to report.
+Public access is attempted first. If it fails with a login challenge, or succeeds but exposes no usable captions, `yt-dlp` may read cookies directly from up to two detected local browser profiles. The browser itself persists its login; Hearmark does not save a cookie file, token, or login state, and asks `yt-dlp` to read the profile on each task. The config file stores only the optional manifest URL. No cookie value is printed, exported, or sent to Hearmark. A user can select a browser with `--browser` or disable browser access with `--browser none`. A browser session cannot bypass DRM or unavailable media. The CLI classifies failures and gives the agent a reason to report.
 
 The transcript and source captions are untrusted task data. The Skill tells the agent not to obey instructions embedded in media content.
 

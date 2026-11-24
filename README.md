@@ -4,7 +4,7 @@
 
 ![CI](https://github.com/Jobo16/hearmark/actions/workflows/ci.yml/badge.svg) ![GitHub release](https://img.shields.io/github/v/release/Jobo16/hearmark) ![License: MIT](https://img.shields.io/badge/license-MIT-187e64)
 
-**Drop a link. Get the words.** Hearmark is an open-source Agent Skill and local CLI for AI agents. Give your agent a YouTube, Douyin, or TikTok link, or a local audio/video file; it returns a transcript or a concrete error.
+**Drop a link. Get the words.** Hearmark is an open-source Agent Skill and local CLI for AI agents. Give your agent a video link supported by `yt-dlp`—including YouTube, Douyin, TikTok, and Bilibili—or a local audio/video file; it returns a transcript or a concrete error.
 
 [Website and setup prompt](https://hearmark.jobo.ink/) · [Architecture](docs/ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md) · [Roadmap](docs/ROADMAP.md)
 
@@ -14,7 +14,7 @@
 - Saves **TXT, SRT, and JSON** locally and returns their absolute paths to the agent.
 - Uses **Parakeet 110M Q8 for English**, **SenseVoice Small for Chinese**, and **Whisper Small for other or unspecified languages** by default. Whisper Medium, Turbo, and Large v3 are optional.
 - Downloads each model from its original provider on first use and caches it locally. The website serves only the small Skill package and version manifest.
-- Tries public media access first. If the site requires login, it can retry using a local browser session. Cookie values stay on the user's computer.
+- Tries public media access first. If login is required—or no usable captions are visible—it can check a local browser session for access or captions. Hearmark does not store cookies; `yt-dlp` reads them from the browser profile on demand, and cookie values stay on the user's computer.
 - Checks the Hearmark package version on each run and checks the latest stable `yt-dlp` before each link task, upgrading it when needed. An unavailable update check does not block transcription.
 
 Hearmark supports **Apple Silicon and Intel Macs, plus Windows x64**. It has no hosted transcription service, account, or payment flow. Access restrictions, region locks, DRM, and platform changes can prevent a download. Model output can be wrong; review important passages.

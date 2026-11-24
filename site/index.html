@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1320">
-  <meta name="description" content="Transcribe YouTube, Douyin, TikTok, and local audio with your AI agent. Hearmark is an open Agent Skill that runs Parakeet, SenseVoice, or Whisper locally and saves TXT, SRT, and JSON.">
+  <meta name="description" content="Transcribe Bilibili, YouTube, Douyin, TikTok, and other yt-dlp-supported videos with your AI agent. Hearmark runs Parakeet, SenseVoice, or Whisper locally and saves TXT, SRT, and JSON.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="google-site-verification" content="rH_buDu8-2HOEmcY-Ena8TffNiuUCNNq3Ee0IGiZiwU">
   <link rel="canonical" href="https://hearmark.jobo.ink/">
@@ -103,8 +103,8 @@
     <section id="how" class="section shell">
       <div class="section-heading"><span class="kicker">THE WORKFLOW</span><h2>The interface is<br><em>your agent.</em></h2><p>No extra workspace to learn. Ask for a transcript in the conversation where you already do your work.</p></div>
       <div class="steps">
-        <article class="step"><span class="step-num">01 / ASK</span><div class="step-icon">↗</div><h3>Give it a source</h3><p>Paste a YouTube, Douyin, or TikTok link, or point to a local audio or video file.</p></article>
-        <article class="step"><span class="step-num">02 / FETCH</span><div class="step-icon">≈</div><h3>Get the speech</h3><p>Use original-language human captions first, then automatic captions. Otherwise fetch the audio; if the site asks for verification, try a local browser session.</p></article>
+        <article class="step"><span class="step-num">01 / ASK</span><div class="step-icon">↗</div><h3>Give it a source</h3><p>Paste a Bilibili, YouTube, Douyin, TikTok, or other yt-dlp-supported link, or point to a local audio or video file.</p></article>
+        <article class="step"><span class="step-num">02 / FETCH</span><div class="step-icon">≈</div><h3>Get the speech</h3><p>Use original-language human captions first, then automatic captions. If public captions are missing or the site asks for verification, check a local browser session before falling back to audio.</p></article>
         <article class="step"><span class="step-num">03 / READ</span><div class="step-icon">≡</div><h3>Work with the words</h3><p>Receive TXT, SRT, and JSON files. Ask your agent to summarize, translate, search, or quote the actual transcript.</p></article>
       </div>
     </section>
@@ -136,7 +136,7 @@
     </section>
 
     <section class="detail-section shell">
-      <div class="detail-card"><span class="detail-symbol">⌁</span><h3>Browser session when needed</h3><p>Public access is tried first. If a site challenges the request, Hearmark tells you which local browser session it uses. Cookies are never sent to Hearmark.</p></div>
+      <div class="detail-card"><span class="detail-symbol">⌁</span><h3>Browser session when needed</h3><p>Public access is tried first. If login-only captions are missing or a site challenges the request, yt-dlp can read a local browser session on demand. Hearmark does not store cookies or login state.</p></div>
       <div class="detail-card"><span class="detail-symbol">↻</span><h3>Checks for updates</h3><p>Every run checks the Skill version. Link tasks also check the latest stable yt-dlp and upgrade when needed. Offline checks do not stop a working task.</p></div>
       <div class="detail-card"><span class="detail-symbol">◇</span><h3>Honest failures</h3><p>Private, unavailable, or restricted media can still fail. The agent gets a classified error and a next step, instead of a made-up transcript.</p></div>
     </section>
@@ -153,6 +153,6 @@
     </section>
   </main>
 
-  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.3.0</span></footer>
+  <footer class="footer shell"><a class="brand" href="#top"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>hearmark<span class="brand-dot">.</span></span></a><span>Local words for the agents you use. · <a href="https://github.com/Jobo16/hearmark">Source on GitHub</a></span><span id="version-label">Beta v0.4.0</span></footer>
 </body>
 </html>

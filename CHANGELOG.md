@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 — 2026-11-24
+
+- Accept HTTPS URLs supported by `yt-dlp`, including Bilibili and `b23.tv`, instead of maintaining a short platform allowlist.
+- Keep captions-first extraction and local ASR fallback for added platforms.
+- When public access has no usable captions, check local browser sessions for account-visible captions without saving cookies in Hearmark.
+
 ## 0.3.0 — 2026-11-24
 
 - Make the website's install prompt and product copy agent-neutral.
