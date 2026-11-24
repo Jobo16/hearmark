@@ -60,7 +60,7 @@ python3 scripts/build.py
 python3 -m http.server 8765 --directory dist
 ```
 
-CI validates Python and JavaScript syntax, Skill packaging, the ZIP hash, and installation on macOS and Windows. Changes go through pull requests; maintainers test a representative local file and URL before a release. Tags matching `v*` build a GitHub release ZIP. The website is deployed to Jobo's server after the source and release package are verified. See the [release checklist](docs/RELEASING.md) and [website deployment guide](docs/DEPLOYMENT.md).
+CI validates Python and JavaScript syntax, Skill packaging, the ZIP hash, and installation on macOS and Windows. After `main` passes CI, GitHub Actions builds and publishes the static website to Jobo's server with a dedicated SSH deploy user. Tags matching `v*` build a GitHub release ZIP. See the [release checklist](docs/RELEASING.md) and [website deployment guide](docs/DEPLOYMENT.md).
 
 ## License
 

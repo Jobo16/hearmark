@@ -18,9 +18,9 @@ ssh "$server" "mkdir -p '$staging'"
 rsync -az --delete dist/ "$server:$staging/"
 ssh "$server" "
   set -e
-  install -d -o caddy -g caddy -m 0755 /srv/sites/hearmark
+  install -d -o hearmark-deploy -g hearmark-deploy -m 0755 /srv/sites/hearmark
   rsync -a --delete '$staging/' /srv/sites/hearmark/
-  chown -R caddy:caddy /srv/sites/hearmark
+  chown -R hearmark-deploy:hearmark-deploy /srv/sites/hearmark
   find /srv/sites/hearmark -type d -exec chmod 755 {} \\;
   find /srv/sites/hearmark -type f -exec chmod 644 {} \\;
   rm -rf '$staging'

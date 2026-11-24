@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   package:
@@ -33,3 +34,39 @@ jobs:
           python .agents/skills/hearmark/scripts/install.py --agent-skills-dir "~/.hearmark-test-agent/skills"
           python .agents/skills/hearmark/scripts/install.py --skip-deps --agent-skills-dir "~/.hearmark-test-agent/skills"
           python -c "from pathlib import Path; home=Path.home(); assert (home/'.hearmark-test-agent/skills/hearmark').resolve() == (home/'.agents/skills/hearmark').resolve()"
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: package
+    runs-on: ubuntu-latest
+    concurrency:
+      group: hearmark-site-deploy
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and verify site
+        run: |
+          python scripts/build.py
+          python scripts/check_package.py
+      - name: Configure deployment key
+        env:
+          HEARMARK_DEPLOY_KEY: ${{ secrets.HEARMARK_DEPLOY_KEY }}
+        run: |
+          test -n "$HEARMARK_DEPLOY_KEY"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$HEARMARK_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cp deploy/known_hosts ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+      - name: Publish to Jobo server
+        run: |
+          rsync -az --delete --chmod=D755,F644 dist/ hearmark-deploy@119.28.238.248:/srv/sites/hearmark/
+          ssh -o IdentitiesOnly=yes hearmark-deploy@119.28.238.248 'sha256sum /srv/sites/hearmark/hearmark-package.zip'
+          curl --fail --silent --show-error --noproxy '*' --resolve hearmark.jobo.ink:443:119.28.238.248 https://hearmark.jobo.ink/manifest.json -o /tmp/hearmark-manifest.json
+          curl --fail --silent --show-error --noproxy '*' --resolve hearmark.jobo.ink:443:119.28.238.248 https://hearmark.jobo.ink/hearmark-package.zip -o /tmp/hearmark-package.zip
+          python -c "import hashlib,json,pathlib; m=json.loads(pathlib.Path('/tmp/hearmark-manifest.json').read_text()); assert hashlib.sha256(pathlib.Path('/tmp/hearmark-package.zip').read_bytes()).hexdigest()==m['sha256']"
